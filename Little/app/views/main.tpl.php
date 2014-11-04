@@ -6,6 +6,6 @@
 	<body>
 		Hello {{{ $name }}} !
 		
-		Memoire: {{{ $memory->->amount }}}
+		Memoire: {{{ $memory->amount }}}
 	</body>
 </html>
