@@ -1,7 +1,7 @@
 <?php
 use \core\Router;
 
-Router::addRoute( '/', 'get_home@Home', 'POST' );
+Router::addRoute( '/', 'get_home@Home', 'GET' );
 
 Router::addRoute( '/hello/{name}', 'hello@Home' );
 
