@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title><?php echo htmlentities($title['value']); ?></title>
+		<title>
+		<?php echo $_VIEWSECTION_title; ?>
+		</title>
 	</head>
 	<body>
-		Hello <?php echo htmlentities($name); ?> !
-		
-		Memoire: <?php echo htmlentities($memory->amount); ?>
+		<?php echo $_VIEWSECTION_content; ?>
 	</body>
 </html>

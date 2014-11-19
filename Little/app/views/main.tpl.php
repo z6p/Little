@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>{{{ $title['value'] }}}</title>
+		<title>
+		@section('title')
+		</title>
 	</head>
 	<body>
-		Hello {{{ $name }}} !
-		
-		Memoire: {{{ $memory->amount }}}
+		@section('content')
 	</body>
 </html>

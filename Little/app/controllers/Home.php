@@ -1,7 +1,5 @@
 <?php
 
-use \view\View;
-
 class Home {
 
 	public function get_home() {
@@ -12,6 +10,6 @@ class Home {
 		\core\moduleImport('view');
 		$memory = new stdClass();
 		$memory->amount = memory_get_peak_usage(true);
-		\view\Template::make('main', array('name'=> $name, 'title'=>array('value'=>'titre'), 'memory'=>$memory)); 
+		\view\Template::make('start', array('name'=> $name, 'title'=>array('value'=>'titre'), 'memory'=>$memory)); 
 	}
 }
