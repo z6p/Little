@@ -2,10 +2,10 @@
 <html>
 	<head>
 		<title>
-		<?php echo $_VIEWSECTION_title; ?>
+		<?php echo $_TPL_VIEWSECTION_title; ?>
 		</title>
 	</head>
 	<body>
-		<?php echo $_VIEWSECTION_content; ?>
+		<?php echo $_TPL_VIEWSECTION_content; ?>
 	</body>
 </html>

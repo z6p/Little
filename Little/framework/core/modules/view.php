@@ -7,9 +7,9 @@ class View {
 	public static function make($view, $params = array(), $return = false, $folder = 'views') {
 		$params = self::clearParams($params);		
 		ob_start();
-		$renderer = function ($_VIEWFOLDER_, $_VIEWNAME_, $vars) {
+		$renderer = function ($__VIEWFOLDER__, $__VIEWNAME__, $vars) {
 			extract( $vars );
-			require APP_PATH . "$_VIEWFOLDER_/$_VIEWNAME_.php";
+			require APP_PATH . "$__VIEWFOLDER__/$__VIEWNAME__.php";
 		};
 		$renderer( $folder, $view, $params );
 
@@ -21,11 +21,11 @@ class View {
 	}
 	
 	private static function clearParams($vars) {
-		if(isset($vars['_VIEWFOLDER_'])) {
-			unset($vars['_VIEWFOLDER_']);
+		if(isset($vars['__VIEWFOLDER__'])) {
+			unset($vars['__VIEWFOLDER__']);
 		}
-		if(isset($vars['_VIEWNAME_'])) {
-			unset($vars['_VIEWNAME_']);
+		if(isset($vars['__VIEWNAME__'])) {
+			unset($vars['__VIEWNAME__']);
 		}
 		return $vars;
 	}
@@ -33,8 +33,10 @@ class View {
 
 class Template {
 
-	protected function parse($view, $folder = 'views') {
+	protected function parse($view, $folder = 'views', $useStore = true) {
 		$template = file_get_contents( APP_PATH . "$folder/$view.tpl.php" );
+		
+		$useStore = ($useStore == true) ? 'true' : 'false'; 
 		
 		$spacesOpt = "[\t\v\f\r ]*";
 		$spaces = "[\t\v\f\r ]+";
@@ -52,12 +54,12 @@ class Template {
 			"/@for".$spacesOpt."\(".$spacesOpt."(.+?)".$spaces."as".$spaces."(.+?)".$spacesOpt."=>".$spacesOpt."(.+?)".$spacesOpt."\)".$spacesOpt."/" => '<?php foreach($1 as $2 => $3): ?>',
 			"/@endfor".$spacesOpt."/i" => '<?php endforeach; ?>',
 			
-			"/@section".$spacesOpt."\(".$spacesOpt."'(.+?)'".$spacesOpt."\)".$spacesOpt."/" => '<?php echo $_VIEWSECTION_$1; ?>',
+			"/@section".$spacesOpt."\(".$spacesOpt."'(.+?)'".$spacesOpt."\)".$spacesOpt."/" => '<?php echo $_TPL_VIEWSECTION_$1; ?>',
 			
-			"/@defineSection".$spacesOpt."\(".$spacesOpt."'(.+?)'".$spacesOpt."\)".$spacesOpt."/" => '<?php $_VIEWSECTION_$1 = null; ob_start(function($buf) use(&$_VIEWSECTION_$1) {$_VIEWSECTION_$1 = $buf; return "";}); ?>',
+			"/@defineSection".$spacesOpt."\(".$spacesOpt."'(.+?)'".$spacesOpt."\)".$spacesOpt."/" => '<?php $_TPL_VIEWSECTION_$1; ob_start(function($buf) use(&$_TPL_VIEWSECTION_$1) {$_TPL_VIEWSECTION_$1 = $buf; return "";}); ?>',
 			"/@endDefineSection".$spacesOpt."/" => '<?php ob_end_flush(); ?>',
 			
-			"/@include".$spacesOpt."\(".$spacesOpt."'(.+?)'".$spacesOpt."\)".$spacesOpt."/" => '<?php \view\Template::make(\'$1\', get_defined_vars()); ?>',
+			"/@include".$spacesOpt."\(".$spacesOpt."'(.+?)'".$spacesOpt."\)".$spacesOpt."/" => '<?php \view\Template::make(\'$1\', get_defined_vars(), false, \'views\', '.$useStore.'); ?>',
 		);
 		foreach( $substitution as $pattern => $replacement ) {
 			$template = preg_replace( $pattern, $replacement, $template );
@@ -67,12 +69,11 @@ class Template {
 	}
 
 	public static function make($view, $params = array(), $return = false, $folder = 'views', $useStore = true) {
-		$params = self::clearParams($params);
 		if($useStore && file_exists( APP_PATH . "storage/$folder/$view.ctpl.php" ))
 			return View::make( "$view.ctpl", $params, $return, "storage/$folder" );
 		
 		$tpl = new self();
-		$template = $tpl->parse( $view );
+		$template = $tpl->parse( $view, 'views', $useStore );
 		if(!is_dir(APP_PATH."storage/$folder")) {
 			mkdir(APP_PATH."storage/$folder", 0777, true);
 		}
@@ -81,15 +82,5 @@ class Template {
 		if(!$useStore)
 			unlink(APP_PATH . "storage/$folder/$view.ctpl.php");
 		return $result;
-	}
-	
-	private static function clearParams($vars) {
-		if(isset($vars['_VIEWFOLDER_'])) {
-			unset($vars['_VIEWFOLDER_']);
-		}
-		if(isset($vars['_VIEWNAME_'])) {
-			unset($vars['_VIEWNAME_']);
-		}
-		return $vars;
 	}
 }
